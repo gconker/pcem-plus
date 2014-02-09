@@ -105,7 +105,7 @@ void pollmouse()
         if (mouse_poll)
            mouse_poll(x, y, mouse_b);
 // not used right now
-//        if (mousecapture) position_mouse(64,64);
+        if (mousecapture) position_mouse(64,64);
 }
 
 /*PC1512 languages -
