@@ -1,0 +1,9 @@
+#summary Compilation instructions
+= Introduction =
+
+Compilation instructions
+
+
+= Details =
+
+To compile this project you need Mingw, Directx sdk and few other libraries installed. 
