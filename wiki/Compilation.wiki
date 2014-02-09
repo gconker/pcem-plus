@@ -7,3 +7,6 @@ Compilation instructions
 = Details =
 
 To compile this project you need Mingw, Directx sdk and few other libraries installed. 
+To make things easier you can download complete compilation enviropment for Pcem from here:
+
+http://www.retroroms.net/modules/newbb/viewtopic.php?topic_id=7609&forum=3 
