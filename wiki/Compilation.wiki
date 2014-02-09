@@ -6,7 +6,18 @@ Compilation instructions
 
 = Details =
 
-To compile this project you need Mingw, Directx sdk and few other libraries installed. 
-To make things easier you can download complete compilation enviropment for Pcem from here:
+To compile this project you will need Mingw, Directx sdk, openalut and a few other libraries installed. 
+To make things easier you can download complete compilation enviropment for Pcem from here, as well as bios roms required to run emulator:
 
 http://www.retroroms.net/modules/newbb/viewtopic.php?topic_id=7609&forum=3 
+
+Just copy latest source files to /src directory .Directory with /mingw and all required libraries will be inside.
+
+To compile debug build, use compile.bat.
+
+To clean up object files (*.o files and others) , use clean.bat.
+
+To compile release build , use compileRelease.bat. It will create release executable Pcem.exe (with not debug information and log) in the same directory. Same as debug build.
+
+
+
