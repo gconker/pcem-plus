@@ -29,8 +29,6 @@
 #include "win-ddraw-fs.h"
 #include "win-d3d.h"
 #include "win-d3d-fs.h"
-
-
 //#include "win-opengl.h"
 
 static struct
@@ -145,7 +143,7 @@ void endblit()
 static int leave_fullscreen_flag = 0;
 void leave_fullscreen()
 {
-    leave_fullscreen_flag = 1;
+        leave_fullscreen_flag = 1;
 }
 
 static int enter_fullscreen_flag = 0;
@@ -153,7 +151,6 @@ void enter_fullscreen()
 {
     enter_fullscreen_flag = 1;
 }
-
 void draw_fullscreen()
 {
     startblit();
@@ -165,7 +162,6 @@ void draw_fullscreen()
     endblit();
     device_force_redraw();
 }
-
 int mainthreadon=0;
 
 /*static HANDLE blitobject;
@@ -275,12 +271,9 @@ static void initmenu(void)
                         AppendMenu(m,MF_STRING,IDM_CDROM_REAL+c,s);
                 }
         }
-
-        /* Enumerate shaders  */
         m=GetSubMenu(menu,2); /*Settings*/
         m=GetSubMenu(m,2); /*Video*/
         m=GetSubMenu(m,8); /*Shaders*/
-
         int shader_counter = 1;
         BOOL found = TRUE;
         HANDLE hFind;
@@ -288,7 +281,6 @@ static void initmenu(void)
         hFind = FindFirstFile("shaders\\*.fx", &FindFileData);
         if (hFind == INVALID_HANDLE_VALUE)
         {
-
         }
         else
         {
@@ -301,7 +293,6 @@ static void initmenu(void)
             FindClose(hFind);
             hFind = INVALID_HANDLE_VALUE;
         }
-
 }
 
 HINSTANCE hinstance;
@@ -406,6 +397,7 @@ int WINAPI WinMain (HINSTANCE hThisInstance,
         if (vid_resize) CheckMenuItem(menu, IDM_VID_RESIZE, MF_CHECKED);
         CheckMenuItem(menu, IDM_VID_DDRAW + vid_api, MF_CHECKED);
         CheckMenuItem(menu, IDM_VID_FS_FULL + video_fullscreen_scale, MF_CHECKED);
+//        set_display_switch_mode(SWITCH_BACKGROUND);
 
         d=romset;
         for (c=0;c<ROM_MAX;c++)
@@ -529,8 +521,6 @@ InitializeCriticalSection(&cs);
                         if (messages.message==WM_QUIT) quited=1;
                         TranslateMessage(&messages);
                         DispatchMessage(&messages);
-
-                        // release mouse if CTL+END is pressed and its captured
                         if ((key[KEY_LCONTROL] || key[KEY_RCONTROL]) && key[KEY_END] )
                         {
                                 releasemouse();
@@ -559,6 +549,7 @@ InitializeCriticalSection(&cs);
 //        endsoundthread();
 //        dumpregs();
         releasemouse();
+
 
         UnregisterClass(szSubClassName, hinstance);
         UnregisterClass(szClassName, hinstance);
@@ -1252,6 +1243,30 @@ BOOL CALLBACK hdconfdlgproc(HWND hdlg, UINT message, WPARAM wParam, LPARAM lPara
                         pause=0;
                         return TRUE;
 
+                        case IDC_EJECTC:
+                        hd[0].spt=0;
+                        hd[0].hpc=0;
+                        hd[0].tracks=0;
+                        ide_fn[0][0]="\0";
+                        SetDlgItemText(hdlg,IDC_EDIT1,"0");
+                        SetDlgItemText(hdlg,IDC_EDIT2,"0");
+                        SetDlgItemText(hdlg,IDC_EDIT3,"0");
+                        SetDlgItemText(hdlg,IDC_EDITC,"");
+                        hd_changed = 1;
+                        return TRUE;
+
+                        case IDC_EJECTD:
+                        hd[1].spt=0;
+                        hd[1].hpc=0;
+                        hd[1].tracks=0;
+                        ide_fn[1][0]="\0";
+                        SetDlgItemText(hdlg,IDC_EDIT4,"0");
+                        SetDlgItemText(hdlg,IDC_EDIT5,"0");
+                        SetDlgItemText(hdlg,IDC_EDIT6,"0");
+                        SetDlgItemText(hdlg,IDC_EDITD,"");
+                        hd_changed = 1;
+                        return TRUE;
+
                         case IDC_CNEW:
                         if (DialogBox(hinstance,TEXT("HdNewDlg"),hdlg,hdnewdlgproc) == 1)
                         {
@@ -1651,7 +1666,6 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
                                         resetpchard();
                                 }
                         }
-                        // shaders. max 100
                         if (LOWORD(wParam)>=IDM_VID_SHADERS_NONE && LOWORD(wParam)<(IDM_VID_SHADERS_NONE+100))
                         {
                                 //uncheck current shader in gui
@@ -1705,7 +1719,6 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
                         ShowCursor(FALSE);
                 }
                 break;
-
                 case WM_MBUTTONUP:
                     releasemouse();
                 break;
@@ -1766,7 +1779,6 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
                 case WM_ENTERFULLSCREEN:
                 draw_fullscreen();
                 break;
-
                 case WM_KEYDOWN:
                 case WM_SYSKEYDOWN:
                 case WM_KEYUP:
@@ -1796,6 +1808,3 @@ LRESULT CALLBACK subWindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPAR
         }
         return 0;
 }
-
-
-
