@@ -8,7 +8,6 @@ extern int video_fullscreen, video_fullscreen_scale, video_fullscreen_first;
 extern char video_shaders_name[100];
 extern int video_shaders_index;
 
-
 enum
 {
         FULLSCR_SCALE_FULL = 0,
@@ -46,7 +45,7 @@ typedef struct
 {
         uint8_t r, g, b;
 } RGB;
-
+        
 typedef RGB PALETTE[256];
 
 extern float cpuclock;

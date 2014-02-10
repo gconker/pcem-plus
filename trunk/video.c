@@ -86,21 +86,21 @@ int video_card_getid(char *s)
                         return c;
                 c++;
         }
-
+        
         return 0;
 }
 
 int video_old_to_new(int card)
 {
         int c = 0;
-
+        
         while (video_cards[c].device)
         {
                 if (video_cards[c].legacy_id == card)
                         return c;
                 c++;
         }
-
+        
         return 0;
 }
 
@@ -110,7 +110,6 @@ int video_new_to_old(int card)
 }
 
 int video_fullscreen = 0, video_fullscreen_scale, video_fullscreen_first;
-
 uint32_t *video_15to32, *video_16to32;
 
 int egareads=0,egawrites=0;
@@ -130,7 +129,7 @@ uint8_t edatlookup[4][4];
         B = 8 ISA clocks
         W = 16 ISA clocks
         L = 32 ISA clocks
-
+        
 Slow 16-bit - 2mb/sec
         B = 6 ISA clocks
         W = 8 ISA clocks
@@ -140,17 +139,17 @@ Fast 16-bit - 4mb/sec
         B = 3 ISA clocks
         W = 3 ISA clocks
         L = 6 ISA clocks
-
+        
 Slow VLB/PCI - 8mb/sec (ish)
         B = 4 bus clocks
         W = 8 bus clocks
         L = 16 bus clocks
-
+        
 Mid VLB/PCI -
         B = 4 bus clocks
         W = 5 bus clocks
         L = 10 bus clocks
-
+        
 Fast VLB/PCI -
         B = 3 bus clocks
         W = 3 bus clocks
@@ -208,7 +207,7 @@ void video_init()
                 case ROM_IBMPCJR:
                 device_add(&pcjr_video_device);
                 return;
-
+                
                 case ROM_TANDY:
                 device_add(&tandy_device);
                 return;
@@ -216,15 +215,15 @@ void video_init()
                 case ROM_PC1512:
                 device_add(&pc1512_device);
                 return;
-
+                
                 case ROM_PC1640:
                 device_add(&pc1640_device);
                 return;
-
+                
                 case ROM_PC200:
                 device_add(&pc200_device);
                 return;
-
+                
                 case ROM_OLIM24:
                 device_add(&m24_device);
                 return;
@@ -236,7 +235,7 @@ void video_init()
                 case ROM_MEGAPC:
                 device_add(&paradise_wd90c11_device);
                 return;
-
+                        
                 case ROM_ACER386:
                 device_add(&oti067_device);
                 return;
@@ -309,7 +308,7 @@ void loadfont(char *s, int format)
                         {
                                 fontdat[c][d]=getc(f);
                         }
-                        for (d=0;d<8;d++) getc(f);
+                        for (d=0;d<8;d++) getc(f);                
                 }
         }
         else
@@ -339,7 +338,7 @@ void initvideo()
                 cgapal[c + 64].r = (((c & 4) ? 2 : 0) | ((c & 0x10) ? 1 : 0)) * 21;
                 cgapal[c + 64].g = (((c & 2) ? 2 : 0) | ((c & 0x10) ? 1 : 0)) * 21;
                 cgapal[c + 64].b = (((c & 1) ? 2 : 0) | ((c & 0x10) ? 1 : 0)) * 21;
-                if ((c & 0x17) == 6)
+                if ((c & 0x17) == 6) 
                         cgapal[c + 64].g >>= 1;
         }
         for (c = 0; c < 64; c++)
