@@ -669,7 +669,7 @@ void SetupSceneScaled(void)
 void loadScalingEffect()
 {
     //HRESULT hr = ScalingEffectLoadEffect(d3ddev, "CRTD3D.txt");
-    if (video_shaders_index==0)
+    if (video_shaders_index==0||1)
     {
         psActive = false;
         return;
