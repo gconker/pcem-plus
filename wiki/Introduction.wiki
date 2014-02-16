@@ -15,4 +15,6 @@ Currently those new features are added :
 
 3. More than 30 filters such as hq2x, Sal and others.
 
-4. Miscellaneous bug fixes  
+4. Eject hard drives
+
+5. Miscellaneous bug fixes  
