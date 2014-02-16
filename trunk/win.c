@@ -1723,6 +1723,11 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
                     releasemouse();
                 break;
 
+                case WM_SYSCOMMAND:
+                if(wParam==SC_KEYMENU && (lParam>>16)<=0) return 0; //disable ALT key for menu
+                return DefWindowProc(hwnd, message, wParam, lParam);
+                break;
+
                 case WM_ENTERMENULOOP:
 //                if (key[KEY_ALT] || key[KEY_ALTGR]) return 0;
                 break;
