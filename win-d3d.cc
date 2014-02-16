@@ -167,13 +167,16 @@ void d3d_init_objects()
 
 void d3d_resize(int x, int y)
 {
+        //pclog("d3d_resize x=%i, y=%i\n",x,y);
         HRESULT hr;
 
         d3dpp.BackBufferWidth  = x;
         d3dpp.BackBufferHeight = y;
 
+        if (x==0||y==0) return;
+
         d3d_reset();
-        pclog("d3d_resize\n");
+
 }
 
 void d3d_reset()
@@ -241,12 +244,9 @@ void d3d_blit_memtoscreen(int x, int y, int y1, int y2, int w, int h)
 
         GetClientRect(d3d_hwnd, &r);
 
-        float sizex, sizey;
-        sizex = (float)(r.right  - r.left)/dwTexWidth;
-        sizey = (float)(r.bottom - r.top)/dwTexHeight;
 
         // vertex coordinates are in rectangle [(-0.5,-0.5),(0.5,0.5)]
-        hr = SetVertexData(sizex, sizey);
+        hr = SetVertexData((float)w/dwTexWidth, (float)h/dwTexHeight);
 
         r.top    = y1;
         r.left   = 0;
@@ -327,12 +327,8 @@ void d3d_blit_memtoscreen_8(int x, int y, int w, int h)
 
         GetClientRect(d3d_hwnd, &r);
 
-        float sizex, sizey;
-        sizex = (float)(r.right  - r.left)/dwTexWidth;
-        sizey = (float)(r.bottom - r.top)/dwTexHeight;
-
         // vertex coordinates are in rectangle [(-0.5,-0.5),(0.5,0.5)]
-        hr = SetVertexData(sizex, sizey);
+        hr = SetVertexData((float)w/dwTexWidth, (float)h/dwTexHeight);
 
         r.top    = 0;
         r.left   = 0;
@@ -669,7 +665,7 @@ void SetupSceneScaled(void)
 void loadScalingEffect()
 {
     //HRESULT hr = ScalingEffectLoadEffect(d3ddev, "CRTD3D.txt");
-    if (video_shaders_index==0||1)
+    if (video_shaders_index==0)
     {
         psActive = false;
         return;

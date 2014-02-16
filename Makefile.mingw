@@ -38,9 +38,9 @@ release : CFLAGS = -O3 -march=i686 -fomit-frame-pointer -D RELEASE_BUILD
 release : PCem.exe
 
 clean :
-	cmd //C del *.o
-	cmd //C del *.exe
-	cmd //C del *.res
+	 cmd //c del *.o
+	 cmd //c  del *.exe
+	 cmd //c  del *.res
 
 %.o : %.c
 	$(CC) $(CFLAGS) -c $<
