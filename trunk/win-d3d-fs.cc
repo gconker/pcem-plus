@@ -90,8 +90,8 @@ void d3d_fs_init(HWND h)
                 WS_POPUP,
                 CW_USEDEFAULT,
                 CW_USEDEFAULT,
-                640,
-                480,
+                d3d_fs_w,
+                d3d_fs_h,
                 HWND_DESKTOP,
                 NULL,
                 NULL,
@@ -742,8 +742,8 @@ void SetupSceneScaled_fs(int w, int h)
     RECT window_rect;
     GetClientRect(d3d_device_window, &window_rect);
     d3d_fs_size(window_rect, &l, &t, &r, &b, w, h);
-    float screen_width = r-l;
-    float screen_height = b-t;
+    float screen_width = window_rect.right-window_rect.left;
+    float screen_height = window_rect.bottom - window_rect.top;
 
     // Projection is screenspace coords
     D3DXMatrixOrthoOffCenterLH(&m_matProj, 0.0f, (float)screen_width, 0.0f, (float)screen_height, 0.0f, 1.0f);
@@ -753,10 +753,11 @@ void SetupSceneScaled_fs(int w, int h)
     // and screen coords. Some drivers may compensate for this
     // automatically, but on others texture alignment errors are introduced
     // More information on this can be found in the Direct3D 9 documentation
-    D3DXMatrixTranslation(&m_matView, (float)screen_width/2-0.5f, (float)screen_height/2+0.5f, 0.0f);
+    D3DXMatrixTranslation(&m_matView, (float)screen_width/2-0.5f , (float)screen_height/2+0.5f , 0.0f);
 
     // World View does scaling
-    D3DXMatrixScaling(&m_matWorld, (float)screen_width, (float)screen_height, 1.0f);
+    D3DXMatrixScaling(&m_matWorld, (float)(r-l), (float)(b-t), 1.0f);
+   
 
     d3ddev->SetTransform(D3DTS_PROJECTION, &m_matProj);
 	d3ddev->SetTransform(D3DTS_VIEW, &m_matView);
