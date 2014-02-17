@@ -640,28 +640,32 @@ HRESULT CreateEffectTextures_fs(void)
             return E_FAIL;
         }
 
-        if(FAILED(hr=d3ddev->CreateVolumeTexture(256, 16, 256, 1, 0, D3DFMT_A8R8G8B8,
-                    D3DPOOL_MANAGED, &lpHq2xLookupTexture, NULL))) {
-            pclog("D3D:Failed to create volume texture lpHq2xLookupTexture: %s\n", DXGetErrorString9(hr));
-
-            return E_FAIL;
-        }
-
-        // build lookup table
-        D3DLOCKED_BOX lockedBox;
-
-        if(FAILED(hr = lpHq2xLookupTexture->LockBox(0, &lockedBox, NULL, 0))) {
-            pclog("D3D:Failed to lock box of volume texture lpHq2xLookupTexture: %s\n", DXGetErrorString9(hr));
-
-            return E_FAIL;
-        }
-
-        BuildHq2xLookupTexture(dwScaledWidth, dwScaledHeight, dwWidth, dwHeight, (Bit8u *)lockedBox.pBits);
-
-        if(FAILED(hr = lpHq2xLookupTexture->UnlockBox(0))) {
-                pclog("D3D:Failed to unlock box of volume texture lpHq2xLookupTexture: %s\n", DXGetErrorString9(hr));
+        if (m_hasH2qxLookupTexture())
+        {
+            pclog("Creating hq2x lookup texture\n");
+            if(FAILED(hr=d3ddev->CreateVolumeTexture(256, 16, 256, 1, 0, D3DFMT_A8R8G8B8,
+                        D3DPOOL_MANAGED, &lpHq2xLookupTexture, NULL))) {
+                pclog("D3D:Failed to create volume texture lpHq2xLookupTexture: %s\n", DXGetErrorString9(hr));
 
                 return E_FAIL;
+            }
+
+            // build lookup table
+            D3DLOCKED_BOX lockedBox;
+
+            if(FAILED(hr = lpHq2xLookupTexture->LockBox(0, &lockedBox, NULL, 0))) {
+                pclog("D3D:Failed to lock box of volume texture lpHq2xLookupTexture: %s\n", DXGetErrorString9(hr));
+
+                return E_FAIL;
+            }
+
+            BuildHq2xLookupTexture(dwScaledWidth, dwScaledHeight, dwWidth, dwHeight, (Bit8u *)lockedBox.pBits);
+
+            if(FAILED(hr = lpHq2xLookupTexture->UnlockBox(0))) {
+                    pclog("D3D:Failed to unlock box of volume texture lpHq2xLookupTexture: %s\n", DXGetErrorString9(hr));
+
+                    return E_FAIL;
+            }
         }
 
     }
@@ -757,7 +761,7 @@ void SetupSceneScaled_fs(int w, int h)
 
     // World View does scaling
     D3DXMatrixScaling(&m_matWorld, (float)(r-l), (float)(b-t), 1.0f);
-   
+
 
     d3ddev->SetTransform(D3DTS_PROJECTION, &m_matProj);
 	d3ddev->SetTransform(D3DTS_VIEW, &m_matView);
