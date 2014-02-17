@@ -780,6 +780,7 @@ void loadScalingEffect_fs()
     char buf[255];
     strcpy(buf,"shaders\\");
     strcat(buf,video_shaders_name);
+    strcat(buf,".fx");
 
     HRESULT hr = ScalingEffectLoadEffect(d3ddev, buf);
     //HRESULT hr = ScalingEffectLoadEffect(d3ddev, "GS4x.fx");

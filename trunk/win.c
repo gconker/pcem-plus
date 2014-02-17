@@ -286,6 +286,10 @@ static void initmenu(void)
         {
             while(found)
             {
+              // getting rid of extension
+              char *lastdot = strrchr (FindFileData.cFileName, '.');
+              if (lastdot != NULL) *lastdot = '\0';
+
               AppendMenu(m,MF_STRING,IDM_VID_SHADERS_NONE+shader_counter,FindFileData.cFileName);
               found = FindNextFile(hFind, &FindFileData);
               shader_counter++;
