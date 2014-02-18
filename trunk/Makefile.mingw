@@ -23,7 +23,7 @@ OBJ = 386.o 808x.o acer386sx.o ali1429.o amstrad.o cdrom-ioctl.o \
 	win-mouse.o win-timer.o win-video.o x86seg.o x87.o xtide.o pc.res
 FMOBJ = fmopl.o ymf262.o
 
-LIBS = -mwindows -lwinmm -lalut -lopenal32 -lddraw -ldinput -ldxguid -ldxerr9 -ld3d9 -ld3dx9
+LIBS = -mwindows -lwinmm -lalut -lopenal32 -lddraw -ldinput8 -ldxguid -ldxerr9 -ld3d9 -ld3dx9
 
 PCem.exe: $(OBJ) $(FMOBJ)
 		  $(CC) $(OBJ) $(FMOBJ)  -o "PCem.exe" $(LIBS)

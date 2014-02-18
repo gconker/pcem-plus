@@ -1,13 +1,14 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdint.h>
-#define DIRECTINPUT_VERSION	0x0700
+#define DIRECTINPUT_VERSION	0x0800
 #define BITMAP WINDOWS_BITMAP
 #include <dinput.h>
 #undef BITMAP
 #include "plat-keyboard.h"
 #include "win.h"
 #include "video.h"
+#include <dxerr9.h>
 
 extern "C" int key[256];
 uint8_t dinput_key[256];
@@ -19,17 +20,17 @@ extern "C" void keyboard_init();
 extern "C" void keyboard_close();
 extern "C" void keyboard_poll();
 
-LPDIRECTINPUT lpdi = NULL;
-LPDIRECTINPUTDEVICE lpdi_key = NULL;
+LPDIRECTINPUT8 lpdi = NULL;
+LPDIRECTINPUTDEVICE8 lpdi_key = NULL;
 
-static int keyboard_lookup[256] = 
+static int keyboard_lookup[256] =
 {
         -1,             DIK_ESCAPE,  DIK_1,           DIK_2,         DIK_3,       DIK_4,        DIK_5,          DIK_6,        /*00*/
         DIK_7,          DIK_8,       DIK_9,           DIK_0,         DIK_MINUS,   DIK_EQUALS,   DIK_BACKSPACE,  DIK_TAB,      /*08*/
         DIK_Q,          DIK_W,       DIK_E,           DIK_R,         DIK_T,       DIK_Y,        DIK_U,          DIK_I,        /*10*/
         DIK_O,          DIK_P,       DIK_LBRACKET,    DIK_RBRACKET,  DIK_RETURN,  DIK_LCONTROL, DIK_A,          DIK_S,        /*18*/
         DIK_D,          DIK_F,       DIK_G,           DIK_H,         DIK_J,       DIK_K,        DIK_L,          DIK_SEMICOLON,/*20*/
-        DIK_APOSTROPHE, DIK_GRAVE,   DIK_LSHIFT,      DIK_BACKSLASH, DIK_Z,       DIK_X,        DIK_C,          DIK_V,        /*28*/  
+        DIK_APOSTROPHE, DIK_GRAVE,   DIK_LSHIFT,      DIK_BACKSLASH, DIK_Z,       DIK_X,        DIK_C,          DIK_V,        /*28*/
         DIK_B,          DIK_N,       DIK_M,           DIK_COMMA,     DIK_PERIOD,  DIK_SLASH,    DIK_RSHIFT,     DIK_MULTIPLY, /*30*/
         DIK_LMENU,      DIK_SPACE,   DIK_CAPSLOCK,    DIK_F1,        DIK_F2,      DIK_F3,       DIK_F4,         DIK_F5,       /*38*/
         DIK_F6,         DIK_F7,      DIK_F8,          DIK_F9,        DIK_F10,     DIK_NUMLOCK,  DIK_SCROLL,     DIK_NUMPAD7,  /*40*/
@@ -40,7 +41,7 @@ static int keyboard_lookup[256] =
         -1,             -1,          -1,              -1,            -1,          -1,           -1,             -1,           /*68*/
         -1,             -1,          -1,              -1,            -1,          -1,           -1,             -1,           /*70*/
         -1,             -1,          -1,              -1,            -1,          -1,           -1,             -1,           /*78*/
-        
+
         -1,             -1,          -1,              -1,            -1,          -1,           -1,             -1,           /*80*/
         -1,             -1,          -1,              -1,            -1,          -1,           -1,             -1,           /*88*/
         -1,             -1,          -1,              -1,            -1,          -1,           -1,             -1,           /*90*/
@@ -48,33 +49,33 @@ static int keyboard_lookup[256] =
         -1,             -1,          -1,              -1,            -1,          -1,           -1,             -1,           /*a0*/
         -1,             -1,          -1,              -1,            -1,          -1,           -1,             -1,           /*a8*/
         -1,             -1,          -1,              -1,            -1,          -1,           -1,             -1,           /*b0*/
-        DIK_RMENU,      -1,          -1,              -1,            -1,          -1,           -1,             -1,           /*b8*/ 
+        DIK_RMENU,      -1,          -1,              -1,            -1,          -1,           -1,             -1,           /*b8*/
         -1,             -1,          -1,              -1,            -1,          -1,           -1,             DIK_HOME,     /*c0*/
         DIK_UP,         DIK_PRIOR,   -1,              DIK_LEFT,      -1,          DIK_RIGHT,    -1,             DIK_END,      /*c8*/
-        DIK_DOWN,       DIK_NEXT,    DIK_INSERT,      DIK_DELETE,    -1,          -1,           -1,             -1,           /*d0*/ 
+        DIK_DOWN,       DIK_NEXT,    DIK_INSERT,      DIK_DELETE,    -1,          -1,           -1,             -1,           /*d0*/
         -1,             -1,          -1,              -1,            -1,          -1,           -1,             -1,           /*d8*/
         -1,             -1,          -1,              -1,            -1,          -1,           -1,             -1,           /*e0*/
         -1,             -1,          -1,              -1,            -1,          -1,           -1,             -1,           /*e8*/
-        -1,             -1,          -1,              -1,            -1,          -1,           -1,             -1,           /*f0*/ 
+        -1,             -1,          -1,              -1,            -1,          -1,           -1,             -1,           /*f0*/
         -1,             -1,          -1,              -1,            -1,          -1,           -1,             DIK_PAUSE,    /*f8*/
 
 };
-        
+
 void keyboard_init()
 {
         atexit(keyboard_close);
-        
-        if (FAILED(DirectInputCreate(hinstance, DIRECTINPUT_VERSION, &lpdi, NULL)))
-           fatal("install_keyboard : DirectInputCreate failed\n");
+
+        if (FAILED(DirectInput8Create(hinstance, DIRECTINPUT_VERSION,  IID_IDirectInput8A , (void**)&lpdi, NULL)))
+           fatal("install_keyboard : DirectInput8Create failed\n");
         if (FAILED(lpdi->CreateDevice(GUID_SysKeyboard, &lpdi_key, NULL)))
            fatal("install_keyboard : CreateDevice failed\n");
-        if (FAILED(lpdi_key->SetCooperativeLevel(ghwnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE)))
+        if (FAILED(lpdi_key->SetCooperativeLevel(ghwnd, DISCL_BACKGROUND | DISCL_NONEXCLUSIVE)))
            fatal("install_keyboard : SetCooperativeLevel failed\n");
         if (FAILED(lpdi_key->SetDataFormat(&c_dfDIKeyboard)))
            fatal("install_keyboard : SetDataFormat failed\n");
         if (FAILED(lpdi_key->Acquire()))
            fatal("install_keyboard : Acquire failed\n");
-                      
+
         memset(key, 0, sizeof(key));
 }
 
@@ -82,6 +83,7 @@ void keyboard_close()
 {
         if (lpdi_key)
         {
+                lpdi_key->Unacquire();
                 lpdi_key->Release();
                 lpdi_key = NULL;
         }
@@ -95,11 +97,23 @@ void keyboard_close()
 void keyboard_poll_host()
 {
         int c;
-        if (FAILED(lpdi_key->GetDeviceState(256, (LPVOID)dinput_key)))
+        HRESULT hr;
+        hr = lpdi_key->Poll();
+        if (hr!=DI_OK && hr!=S_FALSE)
         {
-                lpdi_key->Acquire();
-                lpdi_key->GetDeviceState(256, (LPVOID)dinput_key);
+                pclog("Dinput poll failed %s, %s\n",DXGetErrorString9(hr), DXGetErrorDescription9(hr));
+                hr=lpdi_key->Acquire();
+                if (hr!=DI_OK)
+                        pclog("Dinput Acquire is failed %s, %s\n",DXGetErrorString9(hr), DXGetErrorDescription9(hr));
         }
+
+        hr = lpdi_key->GetDeviceState(256, (LPVOID)dinput_key);
+        if (hr!=DI_OK)
+        {
+                pclog("Dinput GetDeviceState failed %s, %s\n",DXGetErrorString9(hr), DXGetErrorDescription9(hr));
+        }
+
+
         for (c = 0; c < 256; c++)
         {
 //                if (dinput_key[c] & 0x80) pclog("Dinput key down %i %02X\n", c, c);
