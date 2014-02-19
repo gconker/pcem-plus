@@ -2,7 +2,7 @@ VPATH = . mame
 CPP  = g++.exe
 CC   = gcc.exe
 WINDRES = windres.exe
-CFLAGS = -O3 -march=i686 -fomit-frame-pointer
+CFLAGS = -O3 -march=i686 -fomit-frame-pointer -g
 #CFLAGS = -O3 -march=i686 -fomit-frame-pointer -D RELEASE_BUILD
 OBJ = 386.o 808x.o acer386sx.o ali1429.o amstrad.o cdrom-ioctl.o \
 	config.o cpu.o dac.o device.o dma.o ega.o fdc.o \
