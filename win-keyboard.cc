@@ -69,7 +69,7 @@ void keyboard_init()
            fatal("install_keyboard : DirectInput8Create failed\n");
         if (FAILED(lpdi->CreateDevice(GUID_SysKeyboard, &lpdi_key, NULL)))
            fatal("install_keyboard : CreateDevice failed\n");
-        if (FAILED(lpdi_key->SetCooperativeLevel(ghwnd, DISCL_BACKGROUND | DISCL_NONEXCLUSIVE)))
+        if (FAILED(lpdi_key->SetCooperativeLevel(ghwnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE)))
            fatal("install_keyboard : SetCooperativeLevel failed\n");
         if (FAILED(lpdi_key->SetDataFormat(&c_dfDIKeyboard)))
            fatal("install_keyboard : SetDataFormat failed\n");
@@ -101,16 +101,16 @@ void keyboard_poll_host()
         hr = lpdi_key->Poll();
         if (hr!=DI_OK && hr!=S_FALSE)
         {
-                pclog("Dinput poll failed %s, %s\n",DXGetErrorString9(hr), DXGetErrorDescription9(hr));
+                //pclog("Dinput poll failed %s, %s\n",DXGetErrorString9(hr), DXGetErrorDescription9(hr));
                 hr=lpdi_key->Acquire();
-                if (hr!=DI_OK)
-                        pclog("Dinput Acquire is failed %s, %s\n",DXGetErrorString9(hr), DXGetErrorDescription9(hr));
+               // if (hr!=DI_OK)
+               //         pclog("Dinput Acquire is failed %s, %s\n",DXGetErrorString9(hr), DXGetErrorDescription9(hr));
         }
 
         hr = lpdi_key->GetDeviceState(256, (LPVOID)dinput_key);
         if (hr!=DI_OK)
         {
-                pclog("Dinput GetDeviceState failed %s, %s\n",DXGetErrorString9(hr), DXGetErrorDescription9(hr));
+               // pclog("Dinput GetDeviceState failed %s, %s\n",DXGetErrorString9(hr), DXGetErrorDescription9(hr));
         }
 
 

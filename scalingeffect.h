@@ -12,6 +12,8 @@ extern "C" {
     BOOL m_hasPreprocess();
     BOOL m_hasPreprocess2();
     BOOL m_hasH2qxLookupTexture();
+    BOOL m_hasWorkingTexture1();
+    BOOL m_hasWorkingTexture2();
 
     // Set The Textures
     HRESULT ScalingEffectSetTextures( LPDIRECT3DTEXTURE9 lpSource, LPDIRECT3DTEXTURE9 lpWorking1,
