@@ -534,19 +534,24 @@ HRESULT CreateEffectTextures(void)
 
     if(psActive) {
         // Working textures for pixel shader
-        if(FAILED(hr=d3ddev->CreateTexture(dwTexWidth, dwTexHeight, 1, D3DUSAGE_RENDERTARGET,
-                    D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &lpWorkTexture1, NULL))) {
-            pclog("D3D:Failed to create working texture lpWorkTexture1: %s\n", DXGetErrorString9(hr));
-            return E_FAIL;
+        if (m_hasWorkingTexture1())
+        {
+               if(FAILED(hr=d3ddev->CreateTexture(dwTexWidth, dwTexHeight, 1, D3DUSAGE_RENDERTARGET,
+                        D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &lpWorkTexture1, NULL))) {
+                pclog("D3D:Failed to create working texture lpWorkTexture1: %s\n", DXGetErrorString9(hr));
+                return E_FAIL;
+                }
         }
 
-        if(FAILED(hr=d3ddev->CreateTexture(dwTexWidth, dwTexHeight, 1, D3DUSAGE_RENDERTARGET,
-                    D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &lpWorkTexture2, NULL))) {
-            pclog("D3D:Failed to create working texture lpWorkTexture2: %s\n", DXGetErrorString9(hr));
+        if (m_hasWorkingTexture2())
+        {
+               if(FAILED(hr=d3ddev->CreateTexture(dwTexWidth, dwTexHeight, 1, D3DUSAGE_RENDERTARGET,
+                        D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &lpWorkTexture2, NULL))) {
+               pclog("D3D:Failed to create working texture lpWorkTexture2: %s\n", DXGetErrorString9(hr));
 
-            return E_FAIL;
+               return E_FAIL;
+               }
         }
-
 
         if (m_hasH2qxLookupTexture())
         {

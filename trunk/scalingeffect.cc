@@ -84,6 +84,8 @@ void ScalingEffectKillThis(char* src)
 BOOL m_hasPreprocess() { return m_PreprocessTechnique1EffectHandle!=0; }
 BOOL m_hasPreprocess2() { return m_PreprocessTechnique2EffectHandle!=0; }
 BOOL m_hasH2qxLookupTexture() { return m_Hq2xLookupTextureHandle!=0; }
+BOOL m_hasWorkingTexture1() { return m_WorkingTexture1EffectHandle!=0; }
+BOOL m_hasWorkingTexture2() { return m_WorkingTexture2EffectHandle!=0; }
 
 HRESULT ScalingEffectLoadEffect(LPDIRECT3DDEVICE9 i_pd3dDevice, const char *filename)
 {
