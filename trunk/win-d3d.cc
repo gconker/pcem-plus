@@ -326,7 +326,6 @@ void d3d_blit_memtoscreen_8(int x, int y, int w, int h)
         HRESULT hr = D3D_OK;
 
         GetClientRect(d3d_hwnd, &r);
-
         // vertex coordinates are in rectangle [(-0.5,-0.5),(0.5,0.5)]
         hr = SetVertexData((float)w/dwTexWidth, (float)h/dwTexHeight);
 
@@ -363,13 +362,23 @@ void d3d_blit_memtoscreen_8(int x, int y, int w, int h)
                         hr = d3ddev->SetTexture(0, d3dTexture);
 
                 if (hr == D3D_OK)
-                        hr = d3ddev->SetFVF(D3DFVF_XYZRHW | D3DFVF_TEX1);
+                        hr = d3ddev->SetFVF(D3DFVF_TLVERTEX);
 
                 if (hr == D3D_OK)
                         hr = d3ddev->SetStreamSource(0, v_buffer, 0, sizeof(TLVERTEX));
 
                 if (hr == D3D_OK)
-                        hr = d3ddev->DrawPrimitive(D3DPT_TRIANGLELIST, 0, 2);
+                {
+                        if (psActive)
+                        {
+                                SetEffectMatrices();    // copy matrices to effect m_matProj, m_matView, m_matWorld and others
+                                D3DSwapBuffers();       // swap buffers and draw primitives
+                        }
+                        else
+                        {
+                                hr = d3ddev->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, 2);
+                        }
+                }
 
                 if (hr == D3D_OK)
                         hr = d3ddev->SetTexture(0, NULL);
