@@ -448,7 +448,7 @@ static void d3d_fs_blit_memtoscreen_8(int x, int y, int w, int h)
                         hr = d3ddev->SetTexture(0, d3dTexture);
 
                 if (hr == D3D_OK)
-                        hr = d3ddev->SetFVF(D3DFVF_XYZRHW | D3DFVF_TEX1);
+                        hr = d3ddev->SetFVF(D3DFVF_TLVERTEX);
 
                 if (hr == D3D_OK)
                         hr = d3ddev->SetStreamSource(0, v_buffer, 0, sizeof(TLVERTEX));
