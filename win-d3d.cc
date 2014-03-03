@@ -83,6 +83,7 @@ void SetD3DPresentationParams(HWND h)
 void d3d_init(HWND h)
 {
         pclog("init device\n");
+        d3d_close();
         int c;
         HRESULT hr;
 
@@ -184,9 +185,7 @@ void d3d_reset()
         pclog("d3d_reset\n");
         HRESULT hr;
 
-        SetD3DPresentationParams(d3d_hwnd);
 
-        d3d_close_objects();
         if (psActive)
         {
             ScalingEffectKillThis("d3d_reset");
@@ -194,6 +193,7 @@ void d3d_reset()
             SAFE_RELEASE(lpWorkTexture2);
             SAFE_RELEASE(lpHq2xLookupTexture);
         }
+        d3d_close_objects();
 
 
         hr = d3ddev->Reset(&d3dpp);

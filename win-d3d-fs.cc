@@ -199,26 +199,9 @@ static void d3d_fs_init_objects()
 
 void d3d_fs_reset()
 {
-        pclog("d3d_reset\n");
+        pclog("d3d_fs_reset\n");
         HRESULT hr;
 
-        memset(&d3dpp, 0, sizeof(d3dpp));
-
-        d3dpp.Flags                  = 0;
-        d3dpp.SwapEffect             = D3DSWAPEFFECT_DISCARD;
-        d3dpp.hDeviceWindow          = d3d_device_window;
-        d3dpp.BackBufferCount        = 1;
-        d3dpp.MultiSampleType        = D3DMULTISAMPLE_NONE;
-        d3dpp.MultiSampleQuality     = 0;
-        d3dpp.EnableAutoDepthStencil = false;
-        d3dpp.AutoDepthStencilFormat = D3DFMT_UNKNOWN;
-        d3dpp.PresentationInterval   = D3DPRESENT_INTERVAL_IMMEDIATE;
-        d3dpp.Windowed               = false;
-        d3dpp.BackBufferFormat       = D3DFMT_X8R8G8B8;
-        d3dpp.BackBufferWidth        = d3d_fs_w;
-        d3dpp.BackBufferHeight       = d3d_fs_h;
-
-        d3d_fs_close_objects();
         if (psActive)
         {
             ScalingEffectKillThis("d3d_reset");
@@ -226,11 +209,12 @@ void d3d_fs_reset()
             SAFE_RELEASE(lpWorkTexture2);
             SAFE_RELEASE(lpHq2xLookupTexture);
         }
+        d3d_fs_close_objects();
         hr = d3ddev->Reset(&d3dpp);
 
         if (hr == D3DERR_DEVICELOST)
                 return;
-        pclog("d3ddev->Reset %s, %s\n",DXGetErrorString9(hr), DXGetErrorDescription9(hr));
+        pclog("fs d3ddev->Reset %s, %s\n",DXGetErrorString9(hr), DXGetErrorDescription9(hr));
         d3ddev->SetTextureStageState(0,D3DTSS_COLOROP,   D3DTOP_SELECTARG1);
         d3ddev->SetTextureStageState(0,D3DTSS_COLORARG1, D3DTA_TEXTURE);
         d3ddev->SetTextureStageState(0,D3DTSS_ALPHAOP,   D3DTOP_DISABLE);
