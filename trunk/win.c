@@ -331,6 +331,24 @@ void set_window_title(char *s)
         SetWindowText(ghwnd, s);
 }
 
+int window_position_x=100;
+int window_position_y=100;
+int window_position_width=640;
+int window_position_height=480;
+
+void save_window_position()
+{
+        if (video_fullscreen)
+                return;
+        RECT lpRect;
+        GetWindowRect(ghwnd, &lpRect);
+        window_position_x = (int)lpRect.left;
+        window_position_y = (int)lpRect.top;
+        window_position_width = (int) lpRect.right-lpRect.left;
+        window_position_height = (int) lpRect.bottom-lpRect.top;
+        saveconfig();
+}
+
 int WINAPI WinMain (HINSTANCE hThisInstance,
                     HINSTANCE hPrevInstance,
                     LPSTR lpszArgument,
@@ -372,6 +390,7 @@ int WINAPI WinMain (HINSTANCE hThisInstance,
 
         menu = LoadMenu(hThisInstance, TEXT("MainMenu"));
         initmenu();
+        initconfig();
 
         /* The class is registered, let's create the program*/
         hwnd = CreateWindowEx (
@@ -379,20 +398,20 @@ int WINAPI WinMain (HINSTANCE hThisInstance,
                 szClassName,         /* Classname */
                 "PCem v8.1",         /* Title Text */
                 WS_OVERLAPPEDWINDOW&~WS_SIZEBOX, /* default window */
-                CW_USEDEFAULT,       /* Windows decides the position */
-                CW_USEDEFAULT,       /* where the window ends up on the screen */
-                640+(GetSystemMetrics(SM_CXFIXEDFRAME)*2),                 /* The programs width */
-                480+(GetSystemMetrics(SM_CYFIXEDFRAME)*2)+GetSystemMetrics(SM_CYMENUSIZE)+GetSystemMetrics(SM_CYCAPTION)+1,                 /* and height in pixels */
+                window_position_x,       /* Windows decides the position */
+                window_position_y,       /* where the window ends up on the screen */
+                window_position_width,                 /* The programs width */
+                window_position_height,                 /* and height in pixels */
                 HWND_DESKTOP,        /* The window is a child-window to desktop */
                 menu,                /* Menu */
                 hThisInstance,       /* Program Instance handler */
                 NULL                 /* No Window Creation data */
         );
 
+
         /* Make the window visible on the screen */
         ShowWindow (hwnd, nFunsterStil);
 
-//        win_set_window(hwnd);
 
         ghwnd=hwnd;
 
@@ -400,6 +419,7 @@ int WINAPI WinMain (HINSTANCE hThisInstance,
         atexit(midi_close);
 
         initpc();
+
         // Initiating video_shaders_name, and checking item in gui this must be done before video init
         CheckMenuItem(menu, IDM_VID_SHADERS_NONE + video_shaders_index, MF_CHECKED);
         //getting shader name from menu
@@ -1550,6 +1570,7 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
                         drawit=1;
                         break;
                         case IDM_FILE_EXIT:
+                        save_window_position();
                         PostQuitMessage (0);       /* send a WM_QUIT to the message queue */
                         break;
                         case IDM_DISC_A:
@@ -1817,6 +1838,7 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
 //                return DefWindowProc (hwnd, message, wParam, lParam);
 
                 case WM_DESTROY:
+                save_window_position();
                 UnhookWindowsHookEx( hKeyboardHook );
                 KillTimer(hwnd, TIMER_1SEC);
                 PostQuitMessage (0);       /* send a WM_QUIT to the message queue */

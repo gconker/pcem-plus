@@ -7,6 +7,10 @@ int video_new_to_old(int card);
 extern int video_fullscreen, video_fullscreen_scale, video_fullscreen_first;
 extern char video_shaders_name[100];
 extern int video_shaders_index;
+extern int window_position_x;
+extern int window_position_y;
+extern int window_position_width;
+extern int window_position_height;
 
 enum
 {
@@ -45,7 +49,7 @@ typedef struct
 {
         uint8_t r, g, b;
 } RGB;
-        
+
 typedef RGB PALETTE[256];
 
 extern float cpuclock;

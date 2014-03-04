@@ -176,14 +176,14 @@ void pc_reset()
         serial_reset();
 
         setpitclock(models[model].cpu[cpu_manufacturer].cpus[cpu].rspeed);
-        
+
 //        sb_reset();
 
         ali1429_reset();
 //        video_init();
 }
 
-void initpc()
+void initconfig()
 {
         char *p;
 //        allegro_init();
@@ -191,20 +191,22 @@ void initpc()
         pclog("executable_name = %s\n", pcempath);
         p=get_filename(pcempath);
         *p=0;
-        pclog("path = %s\n", pcempath);        
-
-        keyboard_init();
-        mouse_init();
-        
+        pclog("path = %s\n", pcempath);
         loadconfig();
         pclog("Config loaded\n");
-        
+}
+
+void initpc()
+{
+        keyboard_init();
+        mouse_init();
+
         cpuspeed2=(AT)?2:1;
 //        cpuspeed2=cpuspeed;
         atfullspeed=0;
 
-        device_init();        
-        
+        device_init();
+
         initvideo();
         mem_init();
         mem_load_video_bios();
@@ -212,28 +214,28 @@ void initpc()
 
         loaddisc(0,discfns[0]);
         loaddisc(1,discfns[1]);
-        
+
         timer_reset();
         sound_reset();
 	fdc_init();
-        
+
         //loadfont();
         loadnvr();
         sound_init();
         resetide();
         ioctl_open(cdrom_drive);
-        model_init();        
+        model_init();
         video_init();
-        speaker_init();        
+        speaker_init();
         sound_card_init(sound_card_current);
         if (GUS)
                 device_add(&gus_device);
         if (GAMEBLASTER)
                 device_add(&cms_device);
-       
+
         pc_reset();
-        
-        pit_reset();        
+
+        pit_reset();
         install_int_ex(onesec,BPS_TO_TIMER(1));
 //        install_int_ex(vsyncint,BPS_TO_TIMER(60));
 /*        if (romset==ROM_AMI386 || romset==ROM_AMI486) */fullspeed();
@@ -258,24 +260,24 @@ void resetpchard()
 {
         device_close_all();
         device_init();
-        
+
         timer_reset();
         sound_reset();
         mem_resize();
         fdc_init();
         model_init();
         video_init();
-        speaker_init();        
+        speaker_init();
         sound_card_init(sound_card_current);
         if (GUS)
                 device_add(&gus_device);
         if (GAMEBLASTER)
                 device_add(&cms_device);
-        
+
         pc_reset();
-        
+
         resetide();
-        
+
         loadnvr();
 
 //        cpuspeed2 = (AT)?2:1;
@@ -284,9 +286,9 @@ void resetpchard()
 
         shadowbios = 0;
         ali1429_reset();
-        
+
         keyboard_at_reset();
-        
+
 //        output=3;
 }
 
@@ -434,13 +436,13 @@ void loadconfig()
         set_config_file(s);
         GAMEBLASTER = get_config_int(NULL, "gameblaster", 0);
         GUS = get_config_int(NULL, "gus", 0);
-        
+
         model = get_config_int(NULL, "model", 14);
 
         romset = model_getromset();
         cpu_manufacturer = get_config_int(NULL, "cpu_manufacturer", 0);
         cpu = get_config_int(NULL, "cpu", 0);
-        
+
         gfxcard = get_config_int(NULL, "gfxcard", 0);
         video_speed = get_config_int(NULL, "video_speed", 3);
         sound_card_current = get_config_int(NULL, "sndcard", SB2);
@@ -456,16 +458,20 @@ void loadconfig()
         mem_size = get_config_int(NULL, "mem_size", 4);
         cdrom_drive = get_config_int(NULL, "cdrom_drive", 0);
         cdrom_enabled = get_config_int(NULL, "cdrom_enabled", 0);
-        
+
         slowega = get_config_int(NULL, "slow_video", 1);
         cache = get_config_int(NULL, "cache", 3);
         cga_comp = get_config_int(NULL, "cga_composite", 0);
-        
+
         vid_resize = get_config_int(NULL, "vid_resize", 0);
         vid_api = get_config_int(NULL, "vid_api", 0);
         video_fullscreen_scale = get_config_int(NULL, "video_fullscreen_scale", 0);
         video_fullscreen_first = get_config_int(NULL, "video_fullscreen_first", 1);
         video_shaders_index = get_config_int(NULL, "video_shaders_index", 0);
+        window_position_x = get_config_int(NULL, "window_position_x", 100);
+        window_position_y = get_config_int(NULL, "window_position_y", 100);
+        window_position_width = get_config_int(NULL, "window_position_width", 640);
+        window_position_height = get_config_int(NULL, "window_position_height", 480);
 
         hdc[0].spt = get_config_int(NULL, "hdc_sectors", 0);
         hdc[0].hpc = get_config_int(NULL, "hdc_heads", 0);
@@ -486,11 +492,11 @@ void saveconfig()
         config_new();
         set_config_int(NULL, "gameblaster", GAMEBLASTER);
         set_config_int(NULL, "gus", GUS);
-        
+
         set_config_int(NULL, "model", model);
         set_config_int(NULL, "cpu_manufacturer", cpu_manufacturer);
         set_config_int(NULL, "cpu", cpu);
-        
+
         set_config_int(NULL, "gfxcard", gfxcard);
         set_config_int(NULL, "video_speed", video_speed);
         set_config_int(NULL, "sndcard", sound_card_current);
@@ -509,7 +515,11 @@ void saveconfig()
         set_config_int(NULL, "video_fullscreen_scale", video_fullscreen_scale);
         set_config_int(NULL, "video_fullscreen_first", video_fullscreen_first);
         set_config_int(NULL, "video_shaders_index", video_shaders_index);
-        
+        set_config_int(NULL, "window_position_x", window_position_x);
+        set_config_int(NULL, "window_position_y", window_position_y);
+        set_config_int(NULL, "window_position_width", window_position_width);
+        set_config_int(NULL, "window_position_height", window_position_height);
+
         set_config_int(NULL, "hdc_sectors", hdc[0].spt);
         set_config_int(NULL, "hdc_heads", hdc[0].hpc);
         set_config_int(NULL, "hdc_cylinders", hdc[0].tracks);
