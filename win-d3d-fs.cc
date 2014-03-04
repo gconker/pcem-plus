@@ -182,9 +182,6 @@ static void d3d_fs_init_objects()
         d3ddev->SetTextureStageState(0,D3DTSS_COLOROP,   D3DTOP_SELECTARG1);
         d3ddev->SetTextureStageState(0,D3DTSS_COLORARG1, D3DTA_TEXTURE);
         d3ddev->SetTextureStageState(0,D3DTSS_ALPHAOP,   D3DTOP_DISABLE);
-
-        d3ddev->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
-        d3ddev->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
 }
 
 /*void d3d_resize(int x, int y)
@@ -215,12 +212,6 @@ void d3d_fs_reset()
         if (hr == D3DERR_DEVICELOST)
                 return;
         pclog("fs d3ddev->Reset %s, %s\n",DXGetErrorString9(hr), DXGetErrorDescription9(hr));
-        d3ddev->SetTextureStageState(0,D3DTSS_COLOROP,   D3DTOP_SELECTARG1);
-        d3ddev->SetTextureStageState(0,D3DTSS_COLORARG1, D3DTA_TEXTURE);
-        d3ddev->SetTextureStageState(0,D3DTSS_ALPHAOP,   D3DTOP_DISABLE);
-
-        d3ddev->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
-        d3ddev->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
 
         d3d_fs_init_objects();
         if (psActive)
@@ -712,15 +703,21 @@ void SetupSceneScaled_fs(int w, int h)
 {
     double l, t, r, b;
 
-    d3ddev->SetTextureStageState(0, D3DTSS_COLOROP,   D3DTOP_MODULATE);
-    d3ddev->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
-    d3ddev->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
-    d3ddev->SetTextureStageState(0, D3DTSS_ALPHAOP,   D3DTOP_MODULATE);
-    d3ddev->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
-    d3ddev->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE);
-    d3ddev->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_POINT);
-    d3ddev->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_POINT);
-    d3ddev->SetSamplerState(0, D3DSAMP_MIPFILTER, D3DTEXF_NONE);
+    if (!psActive)
+    {
+        d3ddev->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_ANISOTROPIC);
+        d3ddev->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_ANISOTROPIC);
+        d3ddev->SetSamplerState(0, D3DSAMP_MIPFILTER, D3DTEXF_NONE);
+    }
+    else
+    {
+        d3ddev->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_NONE);
+        d3ddev->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_NONE);
+        d3ddev->SetSamplerState(0, D3DSAMP_MIPFILTER, D3DTEXF_NONE);
+    }
+    d3ddev->SetSamplerState(0, D3DSAMP_BORDERCOLOR, 0);
+    d3ddev->SetSamplerState(0, D3DSAMP_ADDRESSU, D3DTADDRESS_BORDER);
+    d3ddev->SetSamplerState(0, D3DSAMP_ADDRESSV, D3DTADDRESS_BORDER);
 
      // Turn off culling
     d3ddev->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
