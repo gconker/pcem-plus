@@ -271,6 +271,8 @@ static void initmenu(void)
                         AppendMenu(m,MF_STRING,IDM_CDROM_REAL+c,s);
                 }
         }
+
+        // Loop through shader files and append to shader submenu
         m=GetSubMenu(menu,2); /*Settings*/
         m=GetSubMenu(m,2); /*Video*/
         m=GetSubMenu(m,8); /*Shaders*/
@@ -297,6 +299,22 @@ static void initmenu(void)
             FindClose(hFind);
             hFind = INVALID_HANDLE_VALUE;
         }
+}
+
+static void enable_shaders_popup()
+{
+    HMENU m;
+    m=GetSubMenu(menu,2); /*Settings*/
+    m=GetSubMenu(m,2); /*Video*/
+    //m=GetSubMenu(m,8); /*Shaders*/
+    if (vid_api==1)
+    {
+            EnableMenuItem(m, 8, MF_ENABLED | MF_BYPOSITION);
+    }
+    else
+    {
+            EnableMenuItem(m, 8, MF_DISABLED | MF_GRAYED | MF_BYPOSITION);
+    }
 }
 
 HINSTANCE hinstance;
@@ -387,6 +405,7 @@ int WINAPI WinMain (HINSTANCE hThisInstance,
         //getting shader name from menu
         GetMenuString(menu, IDM_VID_SHADERS_NONE + video_shaders_index, video_shaders_name, 80, 0);
         pclog("WinMain::video_shaders_name=(%s)\n", video_shaders_name);
+        enable_shaders_popup();
         ///////////////////
 
         vid_apis[0][vid_api].init(ghwnd);
@@ -1588,6 +1607,7 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
                         CheckMenuItem(hmenu, IDM_VID_DDRAW + vid_api, MF_CHECKED);
                         vid_apis[0][vid_api].init(ghwnd);
                         endblit();
+                        enable_shaders_popup();
                         saveconfig();
                         device_force_redraw();
                         break;
