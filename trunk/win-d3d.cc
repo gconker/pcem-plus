@@ -164,6 +164,9 @@ void d3d_init_objects()
         }
 
         d3dTexture->UnlockRect(0);
+        d3ddev->SetTextureStageState(0,D3DTSS_COLOROP,   D3DTOP_SELECTARG1);
+        d3ddev->SetTextureStageState(0,D3DTSS_COLORARG1, D3DTA_TEXTURE);
+        d3ddev->SetTextureStageState(0,D3DTSS_ALPHAOP,   D3DTOP_DISABLE);
 }
 
 void d3d_resize(int x, int y)
@@ -644,17 +647,7 @@ HRESULT SetVertexData(float sizex, float sizey)
 
 void SetupSceneScaled(void)
 {
-    d3ddev->SetTextureStageState(0, D3DTSS_COLOROP,   D3DTOP_MODULATE);
-    d3ddev->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
-    d3ddev->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
-    d3ddev->SetTextureStageState(0, D3DTSS_ALPHAOP,   D3DTOP_MODULATE);
-    d3ddev->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
-    d3ddev->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE);
-    d3ddev->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_POINT);
-    d3ddev->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_POINT);
-    d3ddev->SetSamplerState(0, D3DSAMP_MIPFILTER, D3DTEXF_NONE);
-
-     // Turn off culling
+    // Turn off culling
     d3ddev->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
     // Turn off D3D lighting
     d3ddev->SetRenderState(D3DRS_LIGHTING, false);
