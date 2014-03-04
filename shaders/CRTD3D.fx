@@ -45,7 +45,7 @@
         #define inputGamma  2.4
 
         // Compensate for the standard sRGB gamma of 2.2.
-        #define outputGamma 2.2
+        #define outputGamma 2.8
 
         // Macros.
         #define FIX(c) max(abs(c), 1e-5);
