@@ -218,6 +218,7 @@ void d3d_reset()
 
 void d3d_close()
 {
+        pclog("d3d_close\n");
         if (psActive)
         {
             ScalingEffectKillThis("d3d_close");
