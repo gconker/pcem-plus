@@ -26,7 +26,7 @@ FMOBJ = dbopl.o
 LIBS = -mwindows -lwinmm -lalut -lopenal32 -lddraw -ldinput8 -ldxguid -ldxerr9 -ld3d9 -ld3dx9
 
 PCem.exe: $(OBJ) $(FMOBJ)
-		  $(CC) $(OBJ) $(FMOBJ)  -o "PCem.exe" $(LIBS)
+		  $(CC) $(OBJ) $(FMOBJ)  -o "PCemFX.exe" $(LIBS)
 
 all : PCem.exe
 
