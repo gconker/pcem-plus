@@ -718,9 +718,9 @@ uint8_t s3_accel_in(uint16_t port, void *p)
                 return s3->accel.maj_axis_pcnt >> 8;
 
                 case 0x9ae8:
-                return 0;
+                return 0;    /*FIFO empty*/
                 case 0x9ae9:
-                return 0;
+                return 0x04; /*FIFO empty*/
 
                 case 0xa2e8:
                 return s3->accel.bkgd_color & 0xff;
@@ -908,7 +908,7 @@ uint8_t s3_accel_read(uint32_t addr, void *p)
                 {                                                                                       \
                         case 0x0: dest_dat =             ~dest_dat;  break;                             \
                         case 0x1: dest_dat =  0;                     break;                             \
-                        case 0x2: dest_dat =  1;                     break;                             \
+                        case 0x2: dest_dat = ~0;                     break;                             \
                         case 0x3: dest_dat =              dest_dat;  break;                             \
                         case 0x4: dest_dat =  ~src_dat;              break;                             \
                         case 0x5: dest_dat =   src_dat ^  dest_dat;  break;                             \
