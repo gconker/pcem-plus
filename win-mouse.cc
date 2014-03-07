@@ -22,7 +22,7 @@ int mouse_b = 0;
 void mouse_init()
 {
         atexit(mouse_close);
-        
+
         if (FAILED(lpdi->CreateDevice(GUID_SysMouse, &lpdi_mouse, NULL)))
            fatal("mouse_init : CreateDevice failed\n");
         if (FAILED(lpdi_mouse->SetCooperativeLevel(ghwnd, DISCL_FOREGROUND | (video_fullscreen ? DISCL_EXCLUSIVE : DISCL_NONEXCLUSIVE))))
@@ -30,7 +30,7 @@ void mouse_init()
         if (FAILED(lpdi_mouse->SetDataFormat(&c_dfDIMouse)))
            fatal("mouse_init : SetDataFormat failed\n");
         if (FAILED(lpdi_mouse->Acquire()))
-           fatal("mouse_init : Acquire failed\n");
+           pclog("mouse_init : Acquire failed\n");
 }
 
 void mouse_close()
@@ -48,7 +48,7 @@ void poll_mouse()
         {
                 lpdi_mouse->Acquire();
                 lpdi_mouse->GetDeviceState(sizeof(DIMOUSESTATE), (LPVOID)&mousestate);
-        }                
+        }
         mouse_b = 0;
         if (mousestate.rgbButtons[0] & 0x80)
            mouse_b |= 1;
@@ -57,7 +57,7 @@ void poll_mouse()
         if (mousestate.rgbButtons[2] & 0x80)
            mouse_b |= 4;
         mouse_x += mousestate.lX;
-        mouse_y += mousestate.lY;        
+        mouse_y += mousestate.lY;
         if (!mousecapture && !video_fullscreen)
            mouse_x = mouse_y = mouse_b = 0;
 }
