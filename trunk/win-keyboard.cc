@@ -74,7 +74,7 @@ void keyboard_init()
         if (FAILED(lpdi_key->SetDataFormat(&c_dfDIKeyboard)))
            fatal("install_keyboard : SetDataFormat failed\n");
         if (FAILED(lpdi_key->Acquire()))
-           fatal("install_keyboard : Acquire failed\n");
+            pclog("install_keyboard : Acquire failed\n");
 
         memset(key, 0, sizeof(key));
 }
