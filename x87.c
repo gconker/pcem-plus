@@ -91,7 +91,7 @@ int TOP;
                 else                                            \
                         dst = src1 / (double)src2;              \
         } while (0)
-        
+
 void x87_set_mmx()
 {
         TOP = 0;
@@ -200,7 +200,7 @@ double x87_ld80()
                 exp64final = 0x7ff;
         if ((test.begin & 0x7fff) == 0)
                 exp64final = 0;
-        if (test.eind.ll & 0x400) 
+        if (test.eind.ll & 0x400)
                 mant64++;
 
         test.eind.ll = (sign <<63)|(exp64final << 52)| mant64;
@@ -218,9 +218,9 @@ void x87_st80(double d)
                         uint64_t ll;
                 } eind;
 	} test;
-	
+
 	test.eind.d=d;
-	
+
        	int64_t sign80 = (test.eind.ll&(0x8000000000000000))?1:0;
        	int64_t exp80 =  test.eind.ll&(0x7ff0000000000000);
        	int64_t exp80final = (exp80>>52);
@@ -587,7 +587,7 @@ void x87_d9()
                 switch (reg)
                 {
                         case 0: /*FLD single-precision*/
-                        if (fplog) pclog("FLDs %08X:%08X\n", easeg, eaaddr);                        
+                        if (fplog) pclog("FLDs %08X:%08X\n", easeg, eaaddr);
 //                        if ((rmdat32&0xFFFF)==0xD445) { pclog("FLDS\n"); output=3; dumpregs(); exit(-1); }
                         ts.i=geteal(); if (abrt) { pclog("FLD sp abort\n"); return; }
                         if (fplog) pclog("  %f\n", ts.s);
@@ -632,7 +632,7 @@ void x87_d9()
                         if (abrt) { pclog("FLDENV\n"); return; }
                         return;
                         case 5: /*FLDCW*/
-                        if (fplog) pclog("FLDCW %08X:%08X\n", easeg, eaaddr);                        
+                        if (fplog) pclog("FLDCW %08X:%08X\n", easeg, eaaddr);
                         tempw=geteaw();
                         if (abrt) if (abrt) { pclog("FLDCW abort\n"); return; }
                         npxc=tempw;
@@ -768,14 +768,17 @@ void x87_db()
         double t;
         int32_t templ;
         int64_t temp64;
+
         if (mod==3)
         {
+                //pclog("DB opcode %i %02X\n",reg,rmdat32&0xFF);
                 switch (reg)
                 {
                         case 4:
                         switch (rmdat32&0xFF)
                         {
-                                case 0xE1:
+                                case 0xE0: /* FNENI*/
+                                case 0xE1: /* FNDISI*/
                                 return;
                                 case 0xE2: /*FCLEX*/
                                 if (fplog) pclog("FCLEX\n");
@@ -789,7 +792,7 @@ void x87_db()
                                 TOP=0;
                                 cycles-=17;
                                 return;
-                                case 0xE4:
+                                case 0xE4: /*FNSETPM*/
                                 return;
                         }
                         break;
@@ -825,7 +828,7 @@ void x87_db()
                         cycles-=28;
                         return;
                         case 5: /*FLD extended*/
-                        if (fplog) pclog("FLDe %08X:%08X\n", easeg, eaaddr);                        
+                        if (fplog) pclog("FLDe %08X:%08X\n", easeg, eaaddr);
                         t=x87_ld80(); if (abrt) return;
                         if (fplog) pclog("  %f\n", t);
                         x87_push(t);
@@ -1007,7 +1010,7 @@ void x87_dd()
                         if (fplog) pclog("FLDd %08X:%08X\n", easeg, eaaddr);
                         t.i=readmeml(easeg,eaaddr);
                         t.i|=(uint64_t)readmeml(easeg,eaaddr+4)<<32; if (abrt) return;
-                        if (fplog) pclog("  %f\n", t.d);                        
+                        if (fplog) pclog("  %f\n", t.d);
                         x87_push(t.d);
                         cycles-=3;
                         return;
@@ -1061,7 +1064,7 @@ void x87_dd()
                             MM[4].w == 0xffff && MM[5].w == 0xffff && MM[6].w == 0xffff && MM[7].w == 0xffff &&
                             !TOP && !tag)
                                 ismmx = 1;
-                                
+
                         cycles-=(cr0&1)?34:44;
                         if (fplog) pclog("FRSTOR %08X:%08X %i %i %04X\n", easeg, eaaddr, ismmx, TOP, tag);
 /*                        pclog("new TOP %i\n", TOP);
@@ -1394,7 +1397,7 @@ void x87_df()
                         case 6: /*FBSTP*/
                         if (fplog) pclog("FBSTP %08X:%08X\n", easeg, eaaddr);
                         tempd=ST(0);
-                        if (tempd < 0.0) 
+                        if (tempd < 0.0)
                            tempd = -tempd;
                         for (c=0;c<9;c++)
                         {
