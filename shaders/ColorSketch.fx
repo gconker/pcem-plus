@@ -1,6 +1,6 @@
 /* ############################################################################################
 
-   Cartoon shader - Copyright (C) 2013 guest(r) - guest.r@gmail.com
+   ColorSketch shader - Copyright (C) 2013 guest(r) - guest.r@gmail.com
 
    ############################################################################################
 
@@ -24,16 +24,13 @@
 // NOTES: Set scaler to normal2x or any other 2x scaler (forced mode for hi-res)
 
 
-const float cl = 9.0;
-const float max_outline = 0.70;
-
 #include "shader.code"
 
 float scaling   : SCALING = 0.1;
 
 
 string preprocessTechique : PREPROCESSTECHNIQUE = "AA";
-string combineTechique : COMBINETECHNIQUE =  "cartoon";
+string combineTechique : COMBINETECHNIQUE =  "sketch";
 
 
 VERTEX_STUFF0 PASS1_VERTEX (float3 p : POSITION, float2 tc : TEXCOORD0)
@@ -90,8 +87,8 @@ VERTEX_STUFF0 PASS2_VERTEX (float3 p : POSITION, float2 tc : TEXCOORD0)
 {
   VERTEX_STUFF0 OUT = (VERTEX_STUFF0)0;
 
-	float dx = ps.x*0.5;
-	float dy = ps.y*0.5;
+	float dx = ps.x*0.35;
+	float dy = ps.y*0.35;
 
 	OUT.coord = mul(float4(p,1),WorldViewProjection);
 	OUT.CT = tc;
@@ -119,22 +116,18 @@ float4 PASS2_FRAGMENT ( in VERTEX_STUFF0 VAR ) : COLOR
 	half3 c02 = tex2D(w_l, VAR.t2.zw).xyz; 
 	half3 c12 = tex2D(w_l, VAR.t4.xy).xyz; 
 	half3 c22 = tex2D(w_l, VAR.t4.zw).xyz;
+	half3 pap = half3(0.83, 0.79, 0.63);
 
-	float d1=dot(abs(c00-c22),dt)+0.001;
-	float d2=dot(abs(c20-c02),dt)+0.001;
-	float hl=dot(abs(c01-c21),dt)+0.001;
-	float vl=dot(abs(c10-c12),dt)+0.001;
+	half d1=dot(abs(c00-c22),dt);
+	half d2=dot(abs(c20-c02),dt);
+	half hl=dot(abs(c01-c21),dt);
+	half vl=dot(abs(c10-c12),dt);
 
-	float d = max(max(d1,d2),max(hl,vl))/(length(0.20*(c11+c10+c01+c12+c21))+0.5);
-	d = max(d-0.15,0.0)*1.25;	
-
-	float l = length(c11); 
-	l = l*cl;
-	float f = frac(l); f = pow(f,5.0);
-	l = (floor(l) + f)/cl;	
-
-	c11 = (1.1-min(d,max_outline))*normalize(c11)*l;
-	return float4 (c11,1);
+	half d = 0.55*(d1+d2+hl+vl)/(dot(c11+c10+c02+c22,dt)+0.3); 
+	d+=  0.5*pow(d,0.5);
+	c11*= (1.0-0.6*d); d+=0.1;
+	d = pow(d,1.25-1.25*min(2.0*d,1.0));
+	return half4 (d*c11 + (1.1-d)*pap,1);
 }
 
 
@@ -149,7 +142,7 @@ technique AA
 }
 
 
-technique cartoon
+technique sketch
 {
    pass P0
    {
