@@ -85,6 +85,7 @@ void fatal(const char *format, ...)
    va_end(ap);
    fputs(buf,pclogf);
    fflush(pclogf);
+   dumppic();
    dumpregs();
    exit(-1);
 }
@@ -209,9 +210,8 @@ void initpc()
 
         initvideo();
         mem_init();
-        mem_load_video_bios();
         loadbios();
-
+        mem_add_bios();
         loaddisc(0,discfns[0]);
         loaddisc(1,discfns[1]);
 
@@ -439,6 +439,8 @@ void loadconfig()
 
         model = get_config_int(NULL, "model", 14);
 
+        if (model >= model_count())
+                model = model_count() - 1;
         romset = model_getromset();
         cpu_manufacturer = get_config_int(NULL, "cpu_manufacturer", 0);
         cpu = get_config_int(NULL, "cpu", 0);
