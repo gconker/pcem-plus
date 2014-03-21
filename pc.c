@@ -354,7 +354,7 @@ void runpc()
                 if (win_title_update)
                 {
                         win_title_update=0;
-                        sprintf(s, "PCemFX v8.1.3 - %s - %s - %s - %i%%", model_getname(), models[model].cpu[cpu_manufacturer].cpus[cpu].name, (!mousecapture) ? "Click to capture mouse" : "Press CTRL-END or Middle Button to release mouse", fps);
+                        sprintf(s, "PCemFX v8.1.4 - %s - %s - %s - %i%%", model_getname(), models[model].cpu[cpu_manufacturer].cpus[cpu].name, (!mousecapture) ? "Click to capture mouse" : "Press CTRL-END or Middle Button to release mouse", fps);
                         set_window_title(s);
                 }
                 done++;
