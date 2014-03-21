@@ -14,7 +14,7 @@
 typedef struct gus_t
 {
         int reset;
-        
+
         int global;
         uint32_t addr,dmaaddr;
         int voice;
@@ -37,37 +37,37 @@ typedef struct gus_t
         uint8_t dmactrl;
 
         int16_t out_l, out_r;
-        
+
         int16_t buffer[2][SOUNDBUFLEN];
         int pos;
-        
+
         int samp_timer, samp_latch;
-        
+
         uint8_t *ram;
-        
+
         int irqnext;
-        
+
         int timer_1, timer_2;
-        
+
         int irq, dma, irq_midi;
         int latch_enable;
-        
+
         uint8_t sb_2xa, sb_2xc, sb_2xe;
         uint8_t sb_ctrl;
         int sb_nmi;
-        
+
         uint8_t reg_ctrl;
-        
+
         uint8_t ad_status, ad_data;
         uint8_t ad_timer_ctrl;
-        
+
         uint8_t midi_ctrl, midi_status;
         uint8_t midi_data;
         int midi_loopback;
-        
+
         uint8_t gp1, gp2;
         uint16_t gp1_addr, gp2_addr;
-        
+
         uint8_t usrr;
 } gus_t;
 
@@ -152,7 +152,7 @@ void gus_midi_update_int_status(gus_t *gus)
         }
         else
                 gus->irqstatus &= ~GUS_INT_MIDI_TRANSMIT;
-                
+
         if ((gus->midi_ctrl & MIDI_CTRL_RECEIVE) && (gus->midi_status & MIDI_INT_RECEIVE))
         {
                 gus->midi_status |= MIDI_INT_MASTER;
@@ -167,7 +167,7 @@ void gus_midi_update_int_status(gus_t *gus)
                 picint(1 << gus->irq_midi);
         }
 }
-        
+
 void writegus(uint16_t addr, uint8_t val, void *p)
 {
         gus_t *gus = (gus_t *)p;
@@ -181,17 +181,17 @@ void writegus(uint16_t addr, uint8_t val, void *p)
                 case 0x340: /*MIDI control*/
                 old = gus->midi_ctrl;
                 gus->midi_ctrl = val;
-                
+
                 if ((val & 3) == 3)
                         gus->midi_status = 0;
                 else if ((old & 3) == 3)
                 {
                         gus->midi_status |= MIDI_INT_TRANSMIT;
 //                        pclog("MIDI_INT_TRANSMIT\n");
-                }                
+                }
                 gus_midi_update_int_status(gus);
                 break;
-                
+
                 case 0x341: /*MIDI data*/
                 if (gus->midi_loopback)
                 {
@@ -201,7 +201,7 @@ void writegus(uint16_t addr, uint8_t val, void *p)
                 else
                         gus->midi_status |= MIDI_INT_TRANSMIT;
                 break;
-                
+
                 case 0x342: /*Voice select*/
                 gus->voice=val&31;
                 break;
@@ -286,9 +286,9 @@ gus->curx[gus->voice]=(gus->curx[gus->voice]&0xF807F00)|((val<<7)<<8);
 
                         gus->ctrl[gus->voice] = val & 0x7f;
 
-                        old = gus->waveirqs[gus->voice];                        
-                        gus->waveirqs[gus->voice] = ((val & 0xa0) == 0xa0) ? 1 : 0;                        
-                        if (gus->waveirqs[gus->voice] != old) 
+                        old = gus->waveirqs[gus->voice];
+                        gus->waveirqs[gus->voice] = ((val & 0xa0) == 0xa0) ? 1 : 0;
+                        if (gus->waveirqs[gus->voice] != old)
                                 pollgusirqs(gus);
                         break;
                         case 1: /*Frequency control*/
@@ -347,7 +347,7 @@ gus->curx[gus->voice]=(gus->curx[gus->voice]&0xFFF8000)|((val&0x7F)<<8);
                         case 0xD: /*Ramp control*/
                         old = gus->rampirqs[gus->voice];
                         gus->rctrl[gus->voice] = val & 0x7F;
-                        gus->rampirqs[gus->voice] = ((val & 0xa0) == 0xa0) ? 1 : 0;                        
+                        gus->rampirqs[gus->voice] = ((val & 0xa0) == 0xa0) ? 1 : 0;
                         if (gus->rampirqs[gus->voice] != old)
                                 pollgusirqs(gus);
 //                        printf("Ramp control %02i %02X %02X %i\n",gus->voice,val,gus->rampirqs[gus->voice],ins);
@@ -448,7 +448,7 @@ gus->curx[gus->voice]=(gus->curx[gus->voice]&0xFFF8000)|((val&0x7F)<<8);
                         gus->t2on = 1;
 //                        printf("GUS timer 2 %i\n",val);
                         break;
-                        
+
                         case 0x4c: /*Reset*/
                         gus->reset = val;
                         break;
@@ -459,11 +459,11 @@ gus->curx[gus->voice]=(gus->curx[gus->voice]&0xFFF8000)|((val&0x7F)<<8);
 //                pclog("GUS RAM write %05X %02X\n",gus->addr,val);
                 gus->addr&=0xFFFFF;
                 break;
-                case 0x248: case 0x388: 
-                gus->adcommand = val; 
+                case 0x248: case 0x388:
+                gus->adcommand = val;
 //                pclog("Setting ad command %02X %02X %p\n", val, gus->adcommand, &gus->adcommand);
                 break;
-                
+
                 case 0x389:
                 if ((gus->tctrl & GUS_TIMER_CTRL_AUTO) || gus->adcommand != 4)
                 {
@@ -486,7 +486,7 @@ gus->curx[gus->voice]=(gus->curx[gus->voice]&0xFFF8000)|((val&0x7F)<<8);
                         else
                         {
                                 gus->ad_timer_ctrl = val;
-                        
+
                                 if (val & 0x01)
                                         gus->t1on = 1;
                                 else
@@ -499,12 +499,12 @@ gus->curx[gus->voice]=(gus->curx[gus->voice]&0xFFF8000)|((val&0x7F)<<8);
                         }
                 }
                 break;
-                                
+
                 case 0x240:
                 gus->midi_loopback = val & 0x20;
                 gus->latch_enable = (val & 0x40) ? 2 : 1;
                 break;
-                
+
                 case 0x24b:
                 switch (gus->reg_ctrl & 0x07)
                 {
@@ -518,7 +518,7 @@ gus->curx[gus->voice]=(gus->curx[gus->voice]&0xFFF8000)|((val&0x7F)<<8);
                                         gus->irq_midi = gus->irq;
                                 else
                                         gus->irq_midi = gus_irqs_midi[(val >> 3) & 7];
-                        
+
                                 gus->sb_nmi = val & 0x80;
                         }
                         gus->latch_enable = 0;
@@ -540,10 +540,10 @@ gus->curx[gus->voice]=(gus->curx[gus->voice]&0xFFF8000)|((val&0x7F)<<8);
                         gus->usrr = 0;
                         break;
                         case 6:
-                        break;                        
-                }                
+                        break;
+                }
                 break;
-                
+
                 case 0x246:
                 gus->ad_status |= 0x08;
                 if (gus->sb_ctrl & 0x20)
@@ -595,7 +595,7 @@ uint8_t readgus(uint16_t addr, void *p)
                 gus->midi_status &= ~MIDI_INT_RECEIVE;
                 gus_midi_update_int_status(gus);
                 break;
-                
+
                 case 0x240: return 0;
                 case 0x246: /*IRQ status*/
                 val = gus->irqstatus & ~0x10;
@@ -630,16 +630,16 @@ uint8_t readgus(uint16_t addr, void *p)
                         gus->waveirqs[gus->irqstatus2&0x1F]=0;
                         pollgusirqs(gus);
                         return val;
-                        
+
                         case 0x00: case 0x01: case 0x02: case 0x03:
                         case 0x04: case 0x05: case 0x06: case 0x07:
                         case 0x08: case 0x09: case 0x0a: case 0x0b:
                         case 0x0c: case 0x0d: case 0x0e: case 0x0f:
                         val = 0xff;
                         break;
-                        
-//                        default:
-//                        fatal("Bad GUS global low read %02X\n",gus->global);
+
+                        default:
+                            pclog("Bad GUS global low read %02X\n",gus->global);
                 }
                 break;
                 case 0x345: /*Global high*/
@@ -692,10 +692,10 @@ uint8_t readgus(uint16_t addr, void *p)
                         case 0x0c: case 0x0d: case 0x0e: case 0x0f:
                         val = 0xff;
                         break;
-                        
-//                        default:
-//                        fatal("Bad GUS global high read %02X\n",gus->global);
-                }                
+
+                        default:
+                            pclog("Bad GUS global high read %02X\n",gus->global);
+                }
                 break;
                 case 0x346: return 0xff;
                 case 0x347: /*DRAM access*/
@@ -722,7 +722,7 @@ uint8_t readgus(uint16_t addr, void *p)
                         case 4:
                         val = gus->gp2_addr;
                         break;
-                }                
+                }
                 break;
 
                 case 0x24c:
@@ -741,7 +741,7 @@ uint8_t readgus(uint16_t addr, void *p)
                                 picint(1 << gus->irq);
                 }*/
                 return gus->sb_2xe;
-                
+
                 case 0x248: case 0x388:
 //                pclog("Read ad_status %02X\n", gus->ad_status);
                 if (gus->tctrl & GUS_TIMER_CTRL_AUTO)
@@ -754,13 +754,13 @@ uint8_t readgus(uint16_t addr, void *p)
                 }
                 break;
 
-                case 0x249: 
+                case 0x249:
                 gus->ad_status &= ~0x01;
                 nmi = 0;
                 case 0x389:
                 val = gus->ad_data;
                 break;
-                
+
                 case 0x24A:
                 val = gus->adcommand;
 //                pclog("Read ad command %02X %02X %p\n", gus->adcommand, val, &gus->adcommand);
@@ -775,14 +775,14 @@ uint8_t readgus(uint16_t addr, void *p)
 void gus_poll_timer_1(void *p)
 {
         gus_t *gus = (gus_t *)p;
-        
+
 	gus->timer_1 += (TIMER_USEC * 80);
 //	pclog("gus_poll_timer_1 %i %i  %i %i %02X\n", gustime, gus->t1on, gus->t1, gus->t1l, gus->tctrl);
         if (gus->t1on)
         {
                 gus->t1++;
                 if (gus->t1 > 0xFF)
-                {                        
+                {
 //                        gus->t1on=0;
                         gus->t1=gus->t1l;
                         gus->ad_status |= 0x40;
@@ -810,14 +810,14 @@ void gus_poll_timer_1(void *p)
 void gus_poll_timer_2(void *p)
 {
         gus_t *gus = (gus_t *)p;
-        
+
 	gus->timer_2 += (TIMER_USEC * 320);
 //	pclog("pollgus2 %i %i  %i %i %02X\n", gustime, gus->t2on, gus->t2, gus->t2l, gus->tctrl);
         if (gus->t2on)
         {
                 gus->t2++;
                 if (gus->t2 > 0xFF)
-                {                        
+                {
 //                        gus->t2on=0;
                         gus->t2=gus->t2l;
                         gus->ad_status |= 0x20;
@@ -849,14 +849,14 @@ void gus_poll_wave(void *p)
         int16_t v;
         int32_t vl;
         int update_irqs = 0;
-                
+
         gus->samp_timer += gus->samp_latch;
-        
+
         gus->out_l = gus->out_r = 0;
 
         if ((gus->reset & 3) != 3)
                 return;
-//pclog("gus_poll_wave\n");        
+//pclog("gus_poll_wave\n");
         for (d=0;d<32;d++)
         {
                 if (!(gus->ctrl[d] & 3))
@@ -902,12 +902,12 @@ void gus_poll_wave(void *p)
                                         int diff = gus->start[d] - gus->cur[d];
                                         if (!(gus->rctrl[d]&4))
                                         {
-                                                if (!(gus->ctrl[d]&8)) 
+                                                if (!(gus->ctrl[d]&8))
                                                 {
                                                         gus->ctrl[d] |= 1;
                                                         gus->cur[d] = (gus->ctrl[d] & 0x40) ? gus->end[d] : gus->start[d];
-                                                }                                                
-                                                else 
+                                                }
+                                                else
                                                 {
                                                         if (gus->ctrl[d]&0x10) gus->ctrl[d]^=0x40;
                                                         gus->cur[d] = (gus->ctrl[d] & 0x40) ? (gus->end[d] - diff) : (gus->start[d] + diff);
@@ -930,18 +930,18 @@ void gus_poll_wave(void *p)
                                         int diff = gus->cur[d] - gus->end[d];
                                         if (!(gus->rctrl[d]&4))
                                         {
-                                                if (!(gus->ctrl[d]&8)) 
+                                                if (!(gus->ctrl[d]&8))
                                                 {
                                                         gus->ctrl[d] |= 1;
                                                         gus->cur[d] = (gus->ctrl[d] & 0x40) ? gus->end[d] : gus->start[d];
-                                                }                                                
-                                                else 
+                                                }
+                                                else
                                                 {
                                                         if (gus->ctrl[d]&0x10) gus->ctrl[d]^=0x40;
                                                         gus->cur[d] = (gus->ctrl[d] & 0x40) ? (gus->end[d] - diff) : (gus->start[d] + diff);
                                                 }
                                         }
-                                        if ((gus->ctrl[d] & 0x20) && !gus->waveirqs[d]) 
+                                        if ((gus->ctrl[d] & 0x20) && !gus->waveirqs[d])
                                         {
                                                 gus->waveirqs[d] = 1;
                                                 update_irqs = 1;
@@ -958,12 +958,12 @@ void gus_poll_wave(void *p)
                                 if (gus->rcur[d] <= gus->rstart[d])
                                 {
                                         int diff = gus->rstart[d] - gus->rcur[d];
-                                        if (!(gus->rctrl[d] & 8)) 
+                                        if (!(gus->rctrl[d] & 8))
                                         {
                                                 gus->rctrl[d] |= 1;
                                                 gus->rcur[d] = (gus->rctrl[d] & 0x40) ? gus->rstart[d] : gus->rend[d];
-                                        }                                                
-                                        else 
+                                        }
+                                        else
                                         {
                                                 if (gus->rctrl[d] & 0x10) gus->rctrl[d] ^= 0x40;
                                                 gus->rcur[d] = (gus->rctrl[d] & 0x40) ? (gus->rend[d] - diff) : (gus->rstart[d] + diff);
@@ -984,12 +984,12 @@ void gus_poll_wave(void *p)
                                 if (gus->rcur[d] >= gus->rend[d])
                                 {
                                         int diff = gus->rcur[d] - gus->rend[d];
-                                        if (!(gus->rctrl[d] & 8)) 
+                                        if (!(gus->rctrl[d] & 8))
                                         {
                                                 gus->rctrl[d] |= 1;
                                                 gus->rcur[d] = (gus->rctrl[d] & 0x40) ? gus->rstart[d] : gus->rend[d];
-                                        }                                                
-                                        else 
+                                        }
+                                        else
                                         {
                                                 if (gus->rctrl[d] & 0x10) gus->rctrl[d] ^= 0x40;
                                                 gus->rcur[d] = (gus->rctrl[d] & 0x40) ? (gus->rend[d] - diff) : (gus->rstart[d] + diff);
@@ -1013,7 +1013,7 @@ void gus_poll_wave(void *p)
 void gus_poll(void *p)
 {
         gus_t *gus = (gus_t *)p;
-        
+
         if (gus->pos >= SOUNDBUFLEN)
                 return;
 
@@ -1047,9 +1047,9 @@ void *gus_init()
 
         gus->ram = malloc(1 << 20);
         memset(gus->ram, 0, 1 << 20);
-        
+
         pclog("gus_init\n");
-        
+
         for (c=0;c<32;c++)
         {
                 gus->ctrl[c]=1;
@@ -1068,24 +1068,24 @@ void *gus_init()
         gus->samp_timer = gus->samp_latch = (int)(TIMER_USEC * (1000000.0 / 44100.0));
 
         gus->t1l = gus->t2l = 0xff;
-                
+
         io_sethandler(0x0240, 0x0010, readgus, NULL, NULL, writegus, NULL, NULL,  gus);
         io_sethandler(0x0340, 0x0010, readgus, NULL, NULL, writegus, NULL, NULL,  gus);
-        io_sethandler(0x0746, 0x0001, readgus, NULL, NULL, writegus, NULL, NULL,  gus);        
+        io_sethandler(0x0746, 0x0001, readgus, NULL, NULL, writegus, NULL, NULL,  gus);
         io_sethandler(0x0388, 0x0002, readgus, NULL, NULL, writegus, NULL, NULL,  gus);
         timer_add(gus_poll_wave, &gus->samp_timer, TIMER_ALWAYS_ENABLED,  gus);
         timer_add(gus_poll_timer_1, &gus->timer_1, TIMER_ALWAYS_ENABLED,  gus);
         timer_add(gus_poll_timer_2, &gus->timer_2, TIMER_ALWAYS_ENABLED,  gus);
 
         sound_add_handler(gus_poll, gus_get_buffer, gus);
-        
+
         return gus;
 }
 
 void gus_close(void *p)
 {
         gus_t *gus = (gus_t *)p;
-        
+
         free(gus->ram);
         free(gus);
 }
