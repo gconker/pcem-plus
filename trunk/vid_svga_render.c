@@ -280,7 +280,7 @@ void svga_render_4bpp_lowres(svga_t *svga)
                         svga->firstline_draw = svga->displine;
                 svga->lastline_draw = svga->displine;
 
-                for (x = 0; x <= svga->hdisp; x += 16)
+                for (x = 0; x <= svga->hdisp; x += 8)
                 {
                         uint8_t edat[4];
                         uint8_t dat;
@@ -290,19 +290,19 @@ void svga_render_4bpp_lowres(svga_t *svga)
                         svga->ma &= svga->vrammask;
 
                         dat = edatlookup[edat[0] >> 6][edat[1] >> 6] | (edatlookup[edat[2] >> 6][edat[3] >> 6] << 2);
-                        p[0]  = p[1]  = svga->pallook[svga->egapal[(dat >> 4) & svga->plane_mask]];
-                        p[2]  = p[3]  = svga->pallook[svga->egapal[dat & svga->plane_mask]];
+                        p[0] = svga->pallook[svga->egapal[(dat >> 4) & svga->plane_mask]];
+                        p[1] = svga->pallook[svga->egapal[dat & svga->plane_mask]];
                         dat = edatlookup[(edat[0] >> 4) & 3][(edat[1] >> 4) & 3] | (edatlookup[(edat[2] >> 4) & 3][(edat[3] >> 4) & 3] << 2);
-                        p[4]  = p[5]  = svga->pallook[svga->egapal[(dat >> 4) & svga->plane_mask]];
-                        p[6]  = p[7]  = svga->pallook[svga->egapal[dat & svga->plane_mask]];
+                        p[2] = svga->pallook[svga->egapal[(dat >> 4) & svga->plane_mask]];
+                        p[3] = svga->pallook[svga->egapal[dat & svga->plane_mask]];
                         dat = edatlookup[(edat[0] >> 2) & 3][(edat[1] >> 2) & 3] | (edatlookup[(edat[2] >> 2) & 3][(edat[3] >> 2) & 3] << 2);
-                        p[8]  = p[9]  = svga->pallook[svga->egapal[(dat >> 4) & svga->plane_mask]];
-                        p[10] = p[11] = svga->pallook[svga->egapal[dat & svga->plane_mask]];
+                        p[4] = svga->pallook[svga->egapal[(dat >> 4) & svga->plane_mask]];
+                        p[5] = svga->pallook[svga->egapal[dat & svga->plane_mask]];
                         dat = edatlookup[edat[0] & 3][edat[1] & 3] | (edatlookup[edat[2] & 3][edat[3] & 3] << 2);
-                        p[12] = p[13] = svga->pallook[svga->egapal[(dat >> 4) & svga->plane_mask]];
-                        p[14] = p[15] = svga->pallook[svga->egapal[dat & svga->plane_mask]];
+                        p[6] = svga->pallook[svga->egapal[(dat >> 4) & svga->plane_mask]];
+                        p[7] = svga->pallook[svga->egapal[dat & svga->plane_mask]];
 
-                        p += 16;
+                        p += 8;
                 }
         }
 }
@@ -359,29 +359,20 @@ void svga_render_4bpp_highres(svga_t *svga)
 void svga_render_8bpp_lowres(svga_t *svga)
 {
         //pclog("svga_render_8bpp_lowres\n");
+        int templine = svga->displine ;
         if (svga->changedvram[svga->ma >> 12] || svga->changedvram[(svga->ma >> 12) + 1] || svga->fullchange)
         {
                 int x;
                 int offset = (8 - (svga->scrollcache & 6)) + 24;
-                uint32_t *p = &((uint32_t *)buffer32->line[svga->displine/2])[offset];
+                uint32_t *p = &((uint32_t *)buffer32->line[templine])[offset];
 
                 if (svga->firstline_draw == 2000)
-                        svga->firstline_draw = svga->displine/2;
-                svga->lastline_draw = svga->displine/2;
+                        svga->firstline_draw = templine;
+                svga->lastline_draw = templine;
 
-                for (x = 0; x <= svga->hdisp; x += 8)
+                for (x = 0; x <= svga->hdisp; x += 4)
                 {
                         uint32_t dat = *(uint32_t *)(&svga->vram[svga->ma & svga->vrammask]);
-
-                       /*
-                        p[0] = p[1] = svga->pallook[dat & 0xff];
-                        p[2] = p[3] = svga->pallook[(dat >> 8) & 0xff];
-                        p[4] = p[5] = svga->pallook[(dat >> 16) & 0xff];
-                        p[6] = p[7] = svga->pallook[(dat >> 24) & 0xff];
-
-                        svga->ma += 4;
-                        p += 8;
-                        */
 
                         p[0] = svga->pallook[dat & 0xff];
                         p[1] = svga->pallook[(dat >> 8) & 0xff];

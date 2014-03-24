@@ -236,36 +236,48 @@ uint8_t svga_in(uint16_t addr, void *p)
         return 0xFF;
 }
 
+int halveYres=0;
 void svga_recalctimings(svga_t *svga)
 {
         double crtcconst;
         double _dispontime, _dispofftime, disptime;
         int hdisp_old;
 
+
         svga->vtotal = svga->crtc[6];
         svga->dispend = svga->crtc[0x12];
         svga->vsyncstart = svga->crtc[0x10];
         svga->split = svga->crtc[0x18];
         svga->vblankstart = svga->crtc[0x15];
+        svga->lowres = svga->attrregs[0x10] & 0x40;
+        halveYres = (
+                     ((((svga->gdcreg[5] & 0x60)==0x40)|| ((svga->gdcreg[5] & 0x60)==0x60) ) && (svga->lowres)) ||  // 256+ colors lowres
+                     (((svga->gdcreg[5] & 0x60)==0)&&(svga->seqregs[1] & 8)) // 16 colors lowres
+                     );
 
         if (svga->crtc[7] & 1)  svga->vtotal |= 0x100;
         if (svga->crtc[7] & 32) svga->vtotal |= 0x200;
+        if (halveYres) svga->vtotal=svga->vtotal>>1;
         svga->vtotal += 2;
 
         if (svga->crtc[7] & 2)  svga->dispend |= 0x100;
         if (svga->crtc[7] & 64) svga->dispend |= 0x200;
+        if (halveYres) svga->dispend=svga->dispend>>1;
         svga->dispend++;
 
         if (svga->crtc[7] & 4)   svga->vsyncstart |= 0x100;
         if (svga->crtc[7] & 128) svga->vsyncstart |= 0x200;
+        if (halveYres) svga->vsyncstart=svga->vsyncstart>>1;
         svga->vsyncstart++;
 
         if (svga->crtc[7] & 0x10) svga->split|=0x100;
         if (svga->crtc[9] & 0x40) svga->split|=0x200;
+        if (halveYres) svga->split=svga->split>>1;
         svga->split++;
 
         if (svga->crtc[7] & 0x08) svga->vblankstart |= 0x100;
         if (svga->crtc[9] & 0x20) svga->vblankstart |= 0x200;
+        if (halveYres) svga->vblankstart=svga->vblankstart>>1;
         svga->vblankstart++;
 
         svga->hdisp = svga->crtc[1];
@@ -277,8 +289,6 @@ void svga_recalctimings(svga_t *svga)
         svga->rowoffset = svga->crtc[0x13];
 
         svga->clock = (svga->vidclock) ? VGACONST2 : VGACONST1;
-
-        svga->lowres = svga->attrregs[0x10] & 0x40;
 
         svga->interlace = 0;
 
@@ -311,7 +321,11 @@ void svga_recalctimings(svga_t *svga)
                         {
                                 case 0x00: /*16 colours*/
                                 if (svga->seqregs[1] & 8) /*Low res (320)*/
+                                {
+                                        svga->hdisp /=2;
+                                        svga->hdisp_old = svga->hdisp;
                                         svga->render = svga_render_4bpp_lowres;
+                                }
                                 else
                                         svga->render = svga_render_4bpp_highres;
                                 break;
@@ -326,7 +340,11 @@ void svga_recalctimings(svga_t *svga)
                                 {
                                         case 8:
                                         if (svga->lowres)
+                                        {
+                                                svga->hdisp /=2;
+                                                svga->hdisp_old = svga->hdisp;
                                                 svga->render = svga_render_8bpp_lowres;
+                                        }
                                         else
                                                 svga->render = svga_render_8bpp_highres;
                                         break;
@@ -364,6 +382,11 @@ void svga_recalctimings(svga_t *svga)
 
         svga->linedbl = svga->crtc[9] & 0x80;
         svga->rowcount = svga->crtc[9] & 31;
+        if (halveYres)
+        {
+            svga->rowcount = 0;
+            svga->linedbl = 0;
+        }
         if (svga->recalctimings_ex)
                 svga->recalctimings_ex(svga);
 
@@ -567,6 +590,11 @@ void svga_poll(void *p)
                                 svga->video_res_y /= (svga->crtc[9] & 31) + 1;
                                 if (svga->lowres)
                                    svga->video_res_x /= 2;
+                                if (halveYres)
+                                {
+                                    svga->video_res_x *= 2;
+                                    svga->video_res_y *= 2;
+                                }
 
                                 switch (svga->gdcreg[5] & 0x60)
                                 {
@@ -1109,12 +1137,8 @@ uint8_t svga_read_linear(uint32_t addr, void *p)
 
 void svga_doblit(int y1, int y2, int wx, int wy, svga_t *svga)
 {
-        if (svga->lowres && svga->bpp==8) // 320*200, 256 colors, svga_render_8bpp_lowres
-        {
-            wx /= 2;
-            wy /= 2;
-        }
-//        pclog("svga_doblit start\n");
+
+ //        pclog("svga_doblit start\n");
         svga->frames++;
 //        pclog("doblit %i %i\n", y1, y2);
 //        pclog("svga_doblit %i %i\n", wx, svga->hdisp);
